@@ -9,22 +9,36 @@ class MoneyRecorder extends StatefulWidget {
 }
 
 class _MoneyRecorderState extends State<MoneyRecorder> {
-  final TextEditingController _controller = TextEditingController();
-  bool _showAdd = false;
+  final TextEditingController _controllerSpending = TextEditingController();
+  final TextEditingController _controllerCosts = TextEditingController();
+  bool _showSpendingClear = false;
+  bool _showCostsClear = false;
 
   @override
   void initState() {
     super.initState();
-    _controller.addListener(() {
+    _controllerSpending.addListener(() {
       setState(() {
-        _showAdd = _controller.text.isNotEmpty;
+        _showSpendingClear = _controllerSpending.text.isNotEmpty;
+      });
+    });
+
+    _controllerCosts.addListener(() {
+      setState(() {
+        _showCostsClear = _controllerCosts.text.isNotEmpty;
       });
     });
   }
 
-  void _addMoney() {
-    debugPrint(_controller.text);
-    _controller.clear();
+  void _clearSpending() {
+    debugPrint('clear spending');
+    _controllerSpending.clear();
+    setState(() {});
+  }
+
+  void _clearCosts() {
+    debugPrint('clear costs');
+    _controllerCosts.clear();
     setState(() {});
   }
 
@@ -32,27 +46,68 @@ class _MoneyRecorderState extends State<MoneyRecorder> {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.only(top: 15, left: 5, right: 5),
-      child: TextField(
-        controller: _controller,
-        keyboardType: TextInputType.number,
-        inputFormatters: <TextInputFormatter>[
-          FilteringTextInputFormatter.digitsOnly
+      child: Column(
+        children: [
+          TextField(
+            controller: _controllerSpending,
+            decoration: InputDecoration(
+                labelText: 'Spending',
+                prefixIcon: const Icon(Icons.catching_pokemon_outlined),
+                suffixIcon: _clearSpendingInput(),
+                border: const OutlineInputBorder()),
+          ),
+          const SizedBox(height: 12),
+          TextField(
+            controller: _controllerCosts,
+            keyboardType: TextInputType.number,
+            inputFormatters: <TextInputFormatter>[
+              FilteringTextInputFormatter.digitsOnly
+            ],
+            decoration: InputDecoration(
+              labelText: 'Costs',
+              prefixIcon: const Icon(Icons.money_off),
+              suffixIcon: _clearCostsInput(),
+              border: const OutlineInputBorder(),
+            ),
+          ),
+          SizedBox(
+              width: MediaQuery.of(context).size.width,
+              child: ElevatedButton(
+                  onPressed: !(_showCostsClear && _showSpendingClear)
+                      ? null
+                      : _addSpending,
+                  child: const Text('Add')))
         ],
-        decoration: InputDecoration(
-          labelText: 'Spend Money',
-          prefixIcon: const Icon(Icons.money_off),
-          suffixIcon: _addButton(),
-          border: const OutlineInputBorder(),
-        ),
       ),
     );
   }
 
-  Widget? _addButton() {
-    if (!_showAdd) {
+  Widget? _clearSpendingInput() {
+    if (!_showSpendingClear) {
       return null;
     }
 
-    return IconButton(icon: const Icon(Icons.add), onPressed: _addMoney);
+    return IconButton(
+        key: const Key('dsa'),
+        icon: const Icon(Icons.clear),
+        onPressed: _clearSpending);
+  }
+
+  Widget? _clearCostsInput() {
+    if (!_showCostsClear) {
+      return null;
+    }
+
+    return IconButton(
+        key: const Key('asd'),
+        icon: const Icon(Icons.clear),
+        onPressed: _clearCosts);
+  }
+
+  Function? _addSpending() {
+    debugPrint('Add spending: ' +
+        _controllerSpending.text +
+        ' ' +
+        _controllerCosts.text);
   }
 }
