@@ -76,7 +76,35 @@ class _MoneyRecorderState extends State<MoneyRecorder> {
                   onPressed: !(_showCostsClear && _showSpendingClear)
                       ? null
                       : _addSpending,
-                  child: const Text('Add')))
+                  child: const Text('Add'))),
+          Expanded(
+            child: SizedBox(
+              child: ListView(
+                children: const [
+                  ListTile(
+                    title: Text('Banana'),
+                    subtitle: Text('01-12-2022'),
+                    trailing: Text('2 €'),
+                  ),
+                  ListTile(
+                    title: Text('Jetski'),
+                    subtitle: Text('01-09-2022'),
+                    trailing: Text('1999 €'),
+                  ),
+                  ListTile(
+                    title: Text('Tesla'),
+                    subtitle: Text('01-05-2022'),
+                    trailing: Text('30000 €'),
+                  ),
+                  ListTile(
+                    title: Text('More banana'),
+                    subtitle: Text('01-01-2022'),
+                    trailing: Text('20 €'),
+                  ),
+                ],
+              ),
+            ),
+          )
         ],
       ),
     );
@@ -87,10 +115,7 @@ class _MoneyRecorderState extends State<MoneyRecorder> {
       return null;
     }
 
-    return IconButton(
-        key: const Key('dsa'),
-        icon: const Icon(Icons.clear),
-        onPressed: _clearSpending);
+    return IconButton(icon: const Icon(Icons.clear), onPressed: _clearSpending);
   }
 
   Widget? _clearCostsInput() {
@@ -98,10 +123,7 @@ class _MoneyRecorderState extends State<MoneyRecorder> {
       return null;
     }
 
-    return IconButton(
-        key: const Key('asd'),
-        icon: const Icon(Icons.clear),
-        onPressed: _clearCosts);
+    return IconButton(icon: const Icon(Icons.clear), onPressed: _clearCosts);
   }
 
   Function? _addSpending() {
