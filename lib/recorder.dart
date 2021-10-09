@@ -11,12 +11,22 @@ class MoneyRecorder extends StatefulWidget {
 class _MoneyRecorderState extends State<MoneyRecorder> {
   final TextEditingController _controllerSpending = TextEditingController();
   final TextEditingController _controllerCosts = TextEditingController();
+
+  var items = [];
+
   bool _showSpendingClear = false;
   bool _showCostsClear = false;
 
   @override
   void initState() {
     super.initState();
+
+    items.add({
+      'title': 'Banana',
+      'date': DateTime.now().toString(),
+      'expense': 4.99
+    });
+
     _controllerSpending.addListener(() {
       setState(() {
         _showSpendingClear = _controllerSpending.text.isNotEmpty;
@@ -31,15 +41,27 @@ class _MoneyRecorderState extends State<MoneyRecorder> {
   }
 
   void _clearSpending() {
-    debugPrint('clear spending');
     _controllerSpending.clear();
     setState(() {});
   }
 
   void _clearCosts() {
-    debugPrint('clear costs');
     _controllerCosts.clear();
     setState(() {});
+  }
+
+  void _addSpending() {
+    setState(() {
+      var currentTime = DateTime.now();
+
+      items.insert(0, {
+        'title': _controllerSpending.text,
+        'date': currentTime.toString(),
+        'expense': _controllerCosts.text
+      });
+    });
+    _controllerSpending.clear();
+    _controllerCosts.clear();
   }
 
   @override
@@ -78,36 +100,23 @@ class _MoneyRecorderState extends State<MoneyRecorder> {
                       : _addSpending,
                   child: const Text('Add'))),
           Expanded(
-            child: SizedBox(
-              child: ListView(
-                children: const [
-                  ListTile(
-                    title: Text('Banana'),
-                    subtitle: Text('01-12-2022'),
-                    trailing: Text('2 €'),
-                  ),
-                  ListTile(
-                    title: Text('Jetski'),
-                    subtitle: Text('01-09-2022'),
-                    trailing: Text('1999 €'),
-                  ),
-                  ListTile(
-                    title: Text('Tesla'),
-                    subtitle: Text('01-05-2022'),
-                    trailing: Text('30000 €'),
-                  ),
-                  ListTile(
-                    title: Text('More banana'),
-                    subtitle: Text('01-01-2022'),
-                    trailing: Text('20 €'),
-                  ),
-                ],
-              ),
-            ),
+            child: SizedBox(child: _buildListView(context, items)),
           )
         ],
       ),
     );
+  }
+
+  Widget _buildListView(BuildContext context, List items) {
+    return ListView.builder(
+        itemCount: items.length,
+        itemBuilder: (context, index) {
+          return ListTile(
+            title: Text(items[index]['title'].toString()),
+            subtitle: Text(items[index]['date'].toString()),
+            trailing: Text(items[index]['expense'].toString() + ' ' + '€'),
+          );
+        });
   }
 
   Widget? _clearSpendingInput() {
@@ -124,12 +133,5 @@ class _MoneyRecorderState extends State<MoneyRecorder> {
     }
 
     return IconButton(icon: const Icon(Icons.clear), onPressed: _clearCosts);
-  }
-
-  Function? _addSpending() {
-    debugPrint('Add spending: ' +
-        _controllerSpending.text +
-        ' ' +
-        _controllerCosts.text);
   }
 }
