@@ -11,6 +11,7 @@ class MoneyRecorder extends StatefulWidget {
 class _MoneyRecorderState extends State<MoneyRecorder> {
   final TextEditingController _controllerSpending = TextEditingController();
   final TextEditingController _controllerCosts = TextEditingController();
+  final focusNode = FocusNode();
 
   var items = [];
 
@@ -62,6 +63,7 @@ class _MoneyRecorderState extends State<MoneyRecorder> {
     });
     _controllerSpending.clear();
     _controllerCosts.clear();
+    focusNode.requestFocus();
   }
 
   @override
@@ -72,6 +74,7 @@ class _MoneyRecorderState extends State<MoneyRecorder> {
         children: [
           TextField(
             controller: _controllerSpending,
+            focusNode: focusNode,
             decoration: InputDecoration(
                 labelText: 'Spending',
                 prefixIcon: const Icon(Icons.catching_pokemon_outlined),
