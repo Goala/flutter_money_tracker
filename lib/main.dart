@@ -23,16 +23,27 @@ class MyApp extends StatelessWidget {
           // or simply save your changes to "hot reload" in a Flutter IDE).
           // Notice that the counter didn't reset back to zero; the application
           // is not restarted.
-          primarySwatch: Colors.orange,
+          primarySwatch: Colors.grey,
         ),
-        home: SafeArea(
-          bottom: false,
-          top: false,
-          child: Scaffold(
-              appBar: AppBar(
-                title: const Text('MoneyTracker'),
-              ),
-              body: const MoneyRecorder()),
+        home: DefaultTabController(
+          length: 2,
+          initialIndex: 1,
+          child: SafeArea(
+            bottom: false,
+            top: false,
+            child: Scaffold(
+                appBar: AppBar(
+                  title: const Text('MoneyTracker'),
+                  bottom: const TabBar(tabs: [
+                    Tab(icon: Icon(Icons.stacked_bar_chart)),
+                    Tab(icon: Icon(Icons.attach_money_sharp)),
+                  ]),
+                ),
+                body: const TabBarView(children: [
+                  Icon(Icons.stacked_bar_chart),
+                  MoneyRecorder()
+                ])),
+          ),
         ));
   }
 }
