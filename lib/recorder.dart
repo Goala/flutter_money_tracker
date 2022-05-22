@@ -1,5 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import './expense.dart';
 
 class MoneyRecorder extends StatefulWidget {
   const MoneyRecorder({Key? key}) : super(key: key);
@@ -9,24 +13,21 @@ class MoneyRecorder extends StatefulWidget {
 }
 
 class _MoneyRecorderState extends State<MoneyRecorder> {
+  final storage = const FlutterSecureStorage();
+
   final TextEditingController _controllerSpending = TextEditingController();
   final TextEditingController _controllerCosts = TextEditingController();
   final focusNode = FocusNode();
 
-  var items = [];
+  List<Expense> items = [];
 
   bool _showSpendingClear = false;
   bool _showCostsClear = false;
 
   @override
   void initState() {
+    loadStorage();
     super.initState();
-
-    items.add({
-      'title': 'Banana',
-      'date': DateTime.now().toString(),
-      'expense': 4.99
-    });
 
     _controllerSpending.addListener(() {
       setState(() {
@@ -41,6 +42,16 @@ class _MoneyRecorderState extends State<MoneyRecorder> {
     });
   }
 
+  void loadStorage() async {
+    var expensesString = await storage.read(key: 'expenses');
+    if (expensesString != null) {
+      Iterable it = jsonDecode(expensesString);
+      List<Expense> savedExpenses =
+          List<Expense>.from(it.map((item) => Expense.fromJson(item)));
+      items.addAll(savedExpenses);
+    }
+  }
+
   void _clearSpending() {
     _controllerSpending.clear();
     setState(() {});
@@ -51,16 +62,16 @@ class _MoneyRecorderState extends State<MoneyRecorder> {
     setState(() {});
   }
 
-  void _addSpending() {
+  void _addSpending() async {
     setState(() {
-      var currentTime = DateTime.now();
-
-      items.insert(0, {
-        'title': _controllerSpending.text,
-        'date': currentTime.toString(),
-        'expense': _controllerCosts.text
-      });
+      items.insert(
+          0,
+          Expense(
+              name: _controllerSpending.text, value: _controllerCosts.text));
     });
+
+    await storage.write(key: 'expenses', value: jsonEncode(items));
+
     _controllerSpending.clear();
     _controllerCosts.clear();
     focusNode.requestFocus();
@@ -110,14 +121,14 @@ class _MoneyRecorderState extends State<MoneyRecorder> {
     );
   }
 
-  Widget _buildListView(BuildContext context, List items) {
+  Widget _buildListView(BuildContext context, List<Expense> items) {
     return ListView.builder(
         itemCount: items.length,
         itemBuilder: (context, index) {
           return ListTile(
-            title: Text(items[index]['title'].toString()),
-            subtitle: Text(items[index]['date'].toString()),
-            trailing: Text(items[index]['expense'].toString() + ' ' + '€'),
+            title: Text(items[index].name),
+            subtitle: Text(items[index].time),
+            trailing: Text('${items[index].value} €'),
           );
         });
   }

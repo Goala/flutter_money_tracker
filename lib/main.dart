@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
         ),
         home: DefaultTabController(
           length: 2,
-          initialIndex: 1,
+          initialIndex: 0,
           child: SafeArea(
             bottom: false,
             top: false,
@@ -35,13 +35,13 @@ class MyApp extends StatelessWidget {
                 appBar: AppBar(
                   title: const Text('MoneyTracker'),
                   bottom: const TabBar(tabs: [
-                    Tab(icon: Icon(Icons.stacked_bar_chart)),
                     Tab(icon: Icon(Icons.attach_money_sharp)),
+                    Tab(icon: Icon(Icons.stacked_bar_chart)),
                   ]),
                 ),
                 body: const TabBarView(children: [
+                  MoneyRecorder(),
                   Icon(Icons.stacked_bar_chart),
-                  MoneyRecorder()
                 ])),
           ),
         ));
