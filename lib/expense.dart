@@ -8,7 +8,7 @@ class Expense {
   String name;
 
   Expense({required this.name, required this.value}) {
-    id = Uuid().v4();
+    id = const Uuid().v4();
     time = DateFormat('dd.MM.yyyy HH:MM').format(DateTime.now()).toString();
   }
 

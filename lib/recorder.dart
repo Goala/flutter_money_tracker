@@ -97,7 +97,7 @@ class _MoneyRecorderState extends State<MoneyRecorder> {
             controller: _controllerCosts,
             keyboardType: TextInputType.number,
             inputFormatters: <TextInputFormatter>[
-              FilteringTextInputFormatter.digitsOnly
+              FilteringTextInputFormatter.allow(RegExp(r'(^\d*\.?\d*)'))
             ],
             decoration: InputDecoration(
               labelText: 'Costs',
@@ -125,10 +125,44 @@ class _MoneyRecorderState extends State<MoneyRecorder> {
     return ListView.builder(
         itemCount: items.length,
         itemBuilder: (context, index) {
-          return ListTile(
-            title: Text(items[index].name),
-            subtitle: Text(items[index].time),
-            trailing: Text('${items[index].value} €'),
+          final item = items[index];
+          return Dismissible(
+            key: Key(item.id),
+            onDismissed: (direction) {
+              if (direction == DismissDirection.startToEnd) {
+              }
+              if (direction == DismissDirection.endToStart) {
+                setState(() {
+                  Expense deletedItem = items.removeAt(index);
+                  storage.write(key: 'expenses', value: jsonEncode(items));
+                  ScaffoldMessenger.of(context)
+                    ..removeCurrentSnackBar()
+                    ..showSnackBar(SnackBar(
+                        content: Text('Delete "${item.name}"'),
+                        action: SnackBarAction(
+                          label: 'UNDO',
+                          onPressed: () {
+                            setState(() => {items.insert(index, deletedItem)});
+                          },
+                        )));
+                });
+              }
+            },
+            background: Container(
+              color: Colors.green,
+              alignment: Alignment.centerLeft,
+              child: const Icon(Icons.edit),
+            ),
+            secondaryBackground: Container(
+              color: Colors.red,
+              alignment: Alignment.centerRight,
+              child: const Icon(Icons.delete),
+            ),
+            child: ListTile(
+              title: Text(items[index].name),
+              subtitle: Text(items[index].time),
+              trailing: Text('${items[index].value} €'),
+            ),
           );
         });
   }
