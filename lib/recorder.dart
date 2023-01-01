@@ -71,7 +71,7 @@ class _MoneyRecorderState extends State<MoneyRecorder> {
     });
 
     await storage.write(key: 'expenses', value: jsonEncode(items));
-
+    debugPrint("test");
     _controllerSpending.clear();
     _controllerCosts.clear();
     focusNode.requestFocus();
